@@ -512,6 +512,8 @@ def train(attn_implementation=None):
 
     config = VLLMConfigs[model_args.model_type].from_pretrained(model_args.model_path)
 
+    config.mm_projector_type = model_args.mm_projector_type
+
     config._attn_implementation = attn_implementation
     config.use_token_compression = model_args.use_token_compression
     config.use_flash_loss = model_args.use_flash_loss

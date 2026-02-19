@@ -33,7 +33,7 @@ DATA_DIR=DATASETS/STAGE1
 OUTP_DIR=work_dirs
 
 torchrun --nnodes $WORLD_SIZE \
-    --nproc_per_node $NPROC_PER_NODE \
+    --nproc_per_node 1 \
     --master_addr=$MASTER_ADDR \
     --master_port=$MASTER_PORT \
     --node_rank $RANK \
@@ -43,8 +43,8 @@ torchrun --nnodes $WORLD_SIZE \
     --model_path Qwen/Qwen2.5-1.5B-Instruct \
     --vision_encoder DAMO-NLP-SG/SigLIP-NaViT \
     --mm_projector_type mlp2x_gelu \
-    --data_path ${DATA_DIR}/annotations.jsonl \
-    --data_folder ${DATA_DIR} \
+    --data_path ./annotations_video.jsonl \
+    --data_folder "/workspace/hf_home/hub/datasets--facebook--2M-Flores-ASL/snapshots/b450c1a427738e78f06362fc4619674f5d74f774/data/dev/" \
     --image_merge_size 1 \
     --video_merge_size 2 \
     --fps 1 \

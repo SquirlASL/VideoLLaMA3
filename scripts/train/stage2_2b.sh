@@ -21,8 +21,8 @@ echo "WORLD_SIZE: $WORLD_SIZE"
 echo "NPROC_PER_NODE: $NPROC_PER_NODE"
 
 # Training Arguments
-GLOBAL_BATCH_SIZE=128
-LOCAL_BATCH_SIZE=2
+GLOBAL_BATCH_SIZE=64
+LOCAL_BATCH_SIZE=1
 GRADIENT_ACCUMULATION_STEPS=$[$GLOBAL_BATCH_SIZE/($WORLD_SIZE*$NPROC_PER_NODE*$LOCAL_BATCH_SIZE)]
 echo $GRADIENT_ACCUMULATION_STEPS
 
@@ -34,31 +34,31 @@ DATA_DIR=DATASETS/STAGE2
 OUTP_DIR=work_dirs
 
 torchrun --nnodes $WORLD_SIZE \
-    --nproc_per_node $NPROC_PER_NODE \
+    --nproc_per_node 1 \
     --master_addr=$MASTER_ADDR \
     --master_port=$MASTER_PORT \
     --node_rank $RANK \
     videollama3/train.py \
     --deepspeed scripts/zero1.json \
     --model_type videollama3_qwen2 \
-    --model_path ${OUTP_DIR}/${WANDB_PROJECT}/${PRECEDING_RUN_NAME} \
+    --model_path DAMO-NLP-SG/VideoLLaMA3-7B \
     --vision_encoder DAMO-NLP-SG/SigLIP-NaViT \
     --mm_projector_type mlp2x_gelu \
-    --data_path ${DATA_DIR}/annotations.jsonl \
-    --data_folder ${DATA_DIR} \
+    --data_path ./annotations_video.jsonl \
+    --data_folder "/workspace/hf_home/hub/datasets--facebook--2M-Flores-ASL/snapshots/b450c1a427738e78f06362fc4619674f5d74f774/data/dev/" \
     --image_merge_size 1 \
     --video_merge_size 2 \
     --fps 1 \
     --max_frames 180 \
-    --model_max_length 16384 \
-    --mm_max_length 10240 \
+    --model_max_length 8192 \
+    --mm_max_length 5120 \
     --bf16 True \
     --tf32 True \
     --fp16 False \
     --output_dir ${OUTP_DIR}/${WANDB_PROJECT}/${RUN_NAME} \
     --num_train_epochs 1 \
     --per_device_train_batch_size $LOCAL_BATCH_SIZE \
-    --per_device_eval_batch_size 4 \
+    --per_device_eval_batch_size 1 \
     --gradient_accumulation_steps $GRADIENT_ACCUMULATION_STEPS \
     --evaluation_strategy "no" \
     --save_strategy "steps" \
